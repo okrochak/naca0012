@@ -1,8 +1,8 @@
-clc; clear variables; close all; 
+% clc; clear variables; close all; 
 
 %%  Config
 urange = 0:2:20; 
-fileName = 'Calibration_%03d'; 
+fileName = strcat(hwa_calib, 'Calibration_%03d'); 
 
 for ii = 1:numel(urange)
     fileIn = sprintf(fileName,urange(ii))
@@ -23,9 +23,13 @@ for ii = 1:numel(urange)
     
 end
 
-kings = polyfit(urange,u,4)
+kings = polyfit(u,urange,4)
 
 figure(1)
-plot(urange,u); hold on
-plot(urange,polyval(kings,urange))
+scatter(u,urange); hold on
+plot(1.1:0.001:1.82,polyval(kings,1.1:0.001:1.82))
+legend('calibration data', 'calibration polynomial','FontSize',fntSz)
+ylabel('$U$ [m/s]','Interpreter','latex','FontSize',fntSz)
+xlabel('$V$ [volt]','Interpreter','latex','FontSize',fntSz)
+set(gca,)
 grid on
