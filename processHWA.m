@@ -31,4 +31,4 @@ u = str2num(u);
 % val = val(1);
 % T = t(val);
 % facq = 1/(2*T);
-
+end

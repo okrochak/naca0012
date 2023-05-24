@@ -1,8 +1,10 @@
-% clc; clear variables; close all; 
+function [kings] = calibration(fileName)
 
 %%  Config
 urange = 0:2:20; 
-fileName = strcat(hwa_calib, 'Calibration_%03d'); 
+fntSz = 15;
+lblSz = 15;
+% fileName = strcat(hwa_calib, 'Calibration_%03d'); 
 
 for ii = 1:numel(urange)
     fileIn = sprintf(fileName,urange(ii))
@@ -31,5 +33,6 @@ plot(1.1:0.001:1.82,polyval(kings,1.1:0.001:1.82))
 legend('calibration data', 'calibration polynomial','FontSize',fntSz)
 ylabel('$U$ [m/s]','Interpreter','latex','FontSize',fntSz)
 xlabel('$V$ [volt]','Interpreter','latex','FontSize',fntSz)
-set(gca,)
+% set(gca,)
 grid on
+end
