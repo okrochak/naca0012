@@ -21,14 +21,5 @@ u= tmp2(:,10:17);
 u = str2num(u);
 
 %% Use this to calculate proper sampling frequency
-% ubar = mean(u);
-% up = u-ubar;
-% ucorr = xcorr(up);
-% ucorr = ucorr(100000:end);
-% ucorr = ucorr/ucorr(1);
-% plot(ucorr)
-% val = find(ucorr<0.1);
-% val = val(1);
-% T = t(val);
-% facq = 1/(2*T);
+
 end
