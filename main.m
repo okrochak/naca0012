@@ -15,7 +15,7 @@ kings = calibration(hwa_calib); % run the calibration routine to get kings coeff
 
 % Get the high-frequency measurement of the freestream
 [ts,vs] = processHWA('CorrelationTest');
-us = polyval(kings, vs)
+us = polyval(kings, vs);
 mean1 = mean(us);
 std1 = std(us);
 us((us > mean1 + 3*std1) | (us < mean1 - 3*std1)) = nan;
@@ -38,7 +38,7 @@ alphavec = [0 5 15];
 % Initialize the data structure
 hwa.u = zeros(Na,Ny,Nt);
 hwa.ubar = zeros(Na,Ny); % average velocity
-hwa.sigma = zeros(Na,Ny)
+hwa.rms = zeros(Na,Ny);
 hwa.t = t;
 hwa.y = zeros(Na,Ny);
 hwa.alpha = zeros(Na,Ny);
@@ -80,10 +80,10 @@ for i = 1:Na
         vel((vel > mean1 + 3*std1) | (vel < mean1 - 3*std1)) = nan;
         ubar = mean(vel, "omitnan");
         up = vel - ubar; 
-        sigma = std(up, "omitnan");
+        up_rms = rms(up, "omitnan");
         % assign to main data structure
         hwa.ubar(i,j) = ubar;
-        hwa.sigma(i,j) = sigma;
+        hwa.rms(i,j) = up_rms;
     end
 end
 
@@ -121,7 +121,7 @@ set(gca,'FontSize',fntSz)
 
 % Plot the pre-multiplied spectrum
 figure(2)
-plot(frequencies/1000,spectrum)
+semilogx(frequencies/1000,spectrum)
 title('$f|\hat{u}^{\prime}|$','Interpreter','latex','FontSize',fntSz);
 xlabel('$f$ [kHz]','Interpreter','latex','FontSize',fntSz);
 set(gca,'ticklabelinterpreter','latex')
@@ -136,3 +136,14 @@ xlabel('$y$ [mm]','Interpreter','latex','FontSize',fntSz);
 legend('$\alpha = 0$ deg', '$\alpha = 5$ deg', '$\alpha = 15$ deg','interpreter','latex')
 set(gca,'ticklabelinterpreter','latex')
 set(gca,'FontSize',fntSz)
+
+figure(11)
+plot(yvec,hwa.rms(1,:)); hold on
+plot(yvec,hwa.rms(2,:));
+plot(yvec,hwa.rms(3,:)); hold off
+ylabel('$U_{\mathrm{rms}}$ [m/s]','Interpreter','latex','FontSize',fntSz);
+xlabel('$y$ [mm]','Interpreter','latex','FontSize',fntSz);
+legend('$\alpha = 0$ deg', '$\alpha = 5$ deg', '$\alpha = 15$ deg','interpreter','latex')
+set(gca,'ticklabelinterpreter','latex')
+set(gca,'FontSize',fntSz)
+

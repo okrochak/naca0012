@@ -7,7 +7,7 @@ lblSz = 15;
 % fileName = strcat(hwa_calib, 'Calibration_%03d'); 
 
 for ii = 1:numel(urange)
-    fileIn = sprintf(fileName,urange(ii))
+    fileIn = sprintf(fileName,urange(ii));
     delimiter = ' ';
     startRow = 23;
     formatSpec = '%s';
@@ -25,7 +25,7 @@ for ii = 1:numel(urange)
     
 end
 
-kings = polyfit(u,urange,4)
+kings = polyfit(u,urange,4);
 
 figure(1)
 scatter(u,urange); hold on
