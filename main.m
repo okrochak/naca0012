@@ -2,19 +2,22 @@
 % A: Alex Krochak
 %% 0. Inputs
 % Folder names with HWA data
-hwa_calib = 'calibration/Calibration_%03d';
-hwa_data = 'data/';
-
+hwa_calib = 'hotwire/calibration/Calibration_%03d';
+hwa_data = 'hotwire/data/';
+piv_data = 'piv/data/'; % directory of piv data
+piv_img = 'piv/images/'; % directory of piv images
 fntSz = 15;
 lblSz = 15;
 Ny = 21; % number of y-measurements
 Na = 3; % number of alpha measurements
+
+wind = 4000; % welch method window size
 %% 1. Hotwire Anemometry Analysis
 kings = calibration(hwa_calib); % run the calibration routine to get kings coefficients
 % Process 1 file to get the size
 
 % Get the high-frequency measurement of the freestream
-[ts,vs] = processHWA('CorrelationTest');
+[ts,vs] = processHWA('hotwire/CorrelationTest');
 us = polyval(kings, vs);
 mean1 = mean(us);
 std1 = std(us);
@@ -27,7 +30,7 @@ us_p(isnan(us_p))=0;
 % assign to main data structure
 
 
-fileName = 'data/Measurement_-40_+00';
+fileName = strcat(hwa_data,'Measurement_-40_+00');
 [t, ~] = processHWA(fileName);
 
 Nt = length(t);
@@ -98,14 +101,27 @@ T = ts(val);
 facq = 1/(2*T); % acquisition frequency in Hz
 
 % Compute the pre-multiplied energy spectrum
+% L = length(us_p);
+% uk = fft(us_p)/L;
+% uk = uk(1:L/2);
+% fs = 10000;  % sampling frequnecy
+% frequencies = (1 : L/2) * fs / L; % Frequency vector
+% % frequencies = fftshift(frequencies);
+% uk_pre = uk .* frequencies';
+% spectrum = abs(uk_pre);
+
 L = length(us_p);
-uk = fft(us_p)/L;
-uk = uk(1:L/2);
+uk = pwelch(us_p,wind);
+L = length(uk)
 fs = 10000;  % sampling frequnecy
-frequencies = (1 : L/2) * fs / L; % Frequency vector
+frequencies = (1 : L) * fs / L; % Frequency vector
 % frequencies = fftshift(frequencies);
 uk_pre = uk .* frequencies';
 spectrum = abs(uk_pre);
+
+
+%% 3. Analyze the PIV data
+
 %% 3. Plot the results for HWA
 
 % Plot the time scale
@@ -121,9 +137,9 @@ set(gca,'FontSize',fntSz)
 
 % Plot the pre-multiplied spectrum
 figure(2)
-semilogx(frequencies/1000,spectrum)
+semilogx(frequencies,10*log10(spectrum))
 title('$f|\hat{u}^{\prime}|$','Interpreter','latex','FontSize',fntSz);
-xlabel('$f$ [kHz]','Interpreter','latex','FontSize',fntSz);
+xlabel('$f$ [Hz]','Interpreter','latex','FontSize',fntSz);
 set(gca,'ticklabelinterpreter','latex')
 set(gca,'FontSize',fntSz)
 
