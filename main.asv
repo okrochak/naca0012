@@ -2,10 +2,10 @@
 % A: Alex Krochak
 %% 0. Inputs
 % Folder names with HWA data
-hwa_calib = '../hotwire/calibration/Calibration_%03d';
-hwa_data = '../hotwire/data/';
-piv_data = '../piv/data/'; % directory of piv data
-piv_img = '../piv/images/'; % directory of piv images
+hwa_calib = 'hotwire/calibration/Calibration_%03d';
+hwa_data = 'hotwire/data/';
+piv_data = 'piv/data/'; % directory of piv data
+piv_img = 'piv/images/'; % directory of piv images
 fntSz = 15;
 lblSz = 15;
 Ny = 21; % number of y-measurements
@@ -124,7 +124,7 @@ spectrum = abs(uk_pre);
 piv_inst_files = {'AoA_0__MP(3x32x32_50ov)./B00001.dat'};
 for i = 1:length(piv_inst_files)
     dat_file = piv_inst_files{i};
-    mat = importdata(strcat(piv_data,dat_file));
+    mat = load(strcat(piv_data,dat_file))
 end
 %% 3. Plot the results for HWA
 
