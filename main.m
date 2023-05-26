@@ -158,6 +158,7 @@ plot(yvec,hwa.ubar(2,:));
 plot(yvec,hwa.ubar(3,:)); hold off
 ylabel('$U$ [m/s]','Interpreter','latex','FontSize',fntSz);
 xlabel('$y$ [mm]','Interpreter','latex','FontSize',fntSz);
+title('Mean Velocity - Wake','Interpreter','latex','FontSize',fntSz);
 legend('$\alpha = 0$ deg', '$\alpha = 5$ deg', '$\alpha = 15$ deg','interpreter','latex','Location','southwest')
 set(gca,'ticklabelinterpreter','latex')
 set(gca,'FontSize',fntSz)
@@ -168,6 +169,7 @@ plot(yvec,hwa.rms(2,:));
 plot(yvec,hwa.rms(3,:)); hold off
 ylabel('$U_{\mathrm{rms}}$ [m/s]','Interpreter','latex','FontSize',fntSz);
 xlabel('$y$ [mm]','Interpreter','latex','FontSize',fntSz);
+title('Velocity Fluctutations - Wake','Interpreter','latex','FontSize',fntSz);
 legend('$\alpha = 0$ deg', '$\alpha = 5$ deg', '$\alpha = 15$ deg','interpreter','latex','Location','northwest')
 set(gca,'ticklabelinterpreter','latex')
 set(gca,'FontSize',fntSz)
