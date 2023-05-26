@@ -120,8 +120,11 @@ uk_pre = uk .* frequencies';
 spectrum = abs(uk_pre);
 
 
-%% 3. Analyze the PIV data
-
+%% 3. Analyze the PIV data 
+piv_inst_files = {'AoA_0__MP(3x32x32_50ov)./B00001.dat'};
+for i = 1:length(piv_inst_files)
+    dat_file = piv_inst_files{i};
+    mat = load(strcat(piv_data,dat_file))
 %% 3. Plot the results for HWA
 
 % Plot the time scale
