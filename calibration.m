@@ -35,4 +35,5 @@ ylabel('$U$ [m/s]','Interpreter','latex','FontSize',fntSz)
 xlabel('$V$ [volt]','Interpreter','latex','FontSize',fntSz)
 % set(gca,)
 grid on
+hold off
 end

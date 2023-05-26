@@ -1,11 +1,14 @@
 %% Main Post-Processing Script for the NACA0012 Experimental Analysis %%
 % A: Alex Krochak
+clear all
+close all
+clc
 %% 0. Inputs
 % Folder names with HWA data
-hwa_calib = '../hotwire/calibration/Calibration_%03d';
-hwa_data = '../hotwire/data/';
-piv_data = '../piv/data/'; % directory of piv data
-piv_img = '../piv/images/'; % directory of piv images
+hwa_calib = 'hotwire/calibration/Calibration_%03d';
+hwa_data = 'hotwire/data/';
+piv_data = 'piv/data/'; % directory of piv data
+piv_img = 'piv/images/'; % directory of piv images
 fntSz = 15;
 lblSz = 15;
 Ny = 21; % number of y-measurements
@@ -112,7 +115,7 @@ facq = 1/(2*T); % acquisition frequency in Hz
 
 L = length(us_p);
 uk = pwelch(us_p,wind);
-L = length(uk)
+L = length(uk);
 fs = 10000;  % sampling frequnecy
 frequencies = (1 : L) * fs / L; % Frequency vector
 % frequencies = fftshift(frequencies);
@@ -126,6 +129,7 @@ for i = 1:length(piv_inst_files)
     dat_file = piv_inst_files{i};
     mat = importdata(strcat(piv_data,dat_file));
 end
+
 %% 3. Plot the results for HWA
 
 % Plot the time scale
@@ -134,7 +138,8 @@ plot(ts,ucorr); hold on
 yline(0);
 scatter(T,ucorr(val)); hold off
 xlim([0,0.05]); ylim([-0.1,1]);
-title('$\rho_{xx}$','Interpreter','latex','FontSize',fntSz);
+title('Normalized Auto-correlation Coefficient','Interpreter','latex','FontSize',fntSz);
+ylabel('$\rho_{xx}$','Interpreter','latex','FontSize',fntSz);
 xlabel('$\tau$ [s]','Interpreter','latex','FontSize',fntSz);
 set(gca,'ticklabelinterpreter','latex')
 set(gca,'FontSize',fntSz)
@@ -153,7 +158,7 @@ plot(yvec,hwa.ubar(2,:));
 plot(yvec,hwa.ubar(3,:)); hold off
 ylabel('$U$ [m/s]','Interpreter','latex','FontSize',fntSz);
 xlabel('$y$ [mm]','Interpreter','latex','FontSize',fntSz);
-legend('$\alpha = 0$ deg', '$\alpha = 5$ deg', '$\alpha = 15$ deg','interpreter','latex')
+legend('$\alpha = 0$ deg', '$\alpha = 5$ deg', '$\alpha = 15$ deg','interpreter','latex','Location','southwest')
 set(gca,'ticklabelinterpreter','latex')
 set(gca,'FontSize',fntSz)
 
@@ -163,7 +168,7 @@ plot(yvec,hwa.rms(2,:));
 plot(yvec,hwa.rms(3,:)); hold off
 ylabel('$U_{\mathrm{rms}}$ [m/s]','Interpreter','latex','FontSize',fntSz);
 xlabel('$y$ [mm]','Interpreter','latex','FontSize',fntSz);
-legend('$\alpha = 0$ deg', '$\alpha = 5$ deg', '$\alpha = 15$ deg','interpreter','latex')
+legend('$\alpha = 0$ deg', '$\alpha = 5$ deg', '$\alpha = 15$ deg','interpreter','latex','Location','northwest')
 set(gca,'ticklabelinterpreter','latex')
 set(gca,'FontSize',fntSz)
 
