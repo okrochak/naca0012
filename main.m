@@ -15,6 +15,8 @@ Ny = 21; % number of y-measurements
 Na = 3; % number of alpha measurements
 
 wind = 4000; % welch method window size
+U_inf = 10; % inflow velocity magnitude m/s
+c = 100; %chord in mm
 %% 1. Hotwire Anemometry Analysis
 kings = calibration(hwa_calib); % run the calibration routine to get kings coefficients
 % Process 1 file to get the size
@@ -26,7 +28,7 @@ mean1 = mean(us);
 std1 = std(us);
 us((us > mean1 + 3*std1) | (us < mean1 - 3*std1)) = nan;
 us_bar = mean(us, "omitnan");
-us_p = us - us_bar; 
+us_p = us - us_bar;
 sigma = std(us_p, "omitnan");
 us_p(isnan(us_p))=0;
 
@@ -126,8 +128,10 @@ spectrum = abs(uk_pre);
 
 close all
 %% 3. Analyze the PIV data 
-piv_inst_files = {'AoA_0__SP(32x32_50ov)./B00001.dat', 'AoA_5__SP(32x32_50ov)./B00001.dat', 'AoA_15__SP(32x32_50ov)./B00001.dat'};
-piv_figure = {'AoA_0_32x32_50ov','AoA_5_32x32_50ov','AoA_15_32x32_50ov'};
+piv_inst_files = {'AoA_0__SP(32x32_50ov)./B00001.dat', 'AoA_5__SP(32x32_50ov)./B00001.dat', 'AoA_5__SP(32x32_50ov)./B00001.dat'};
+piv_figure = {'AoA_0__SP(32x32_50ov).','AoA_5__SP(32x32_50ov).','AoA_15__SP(32x32_50ov).'};
+% piv_inst_files = {'AoA_15_dt_6__MP(1x16x16_50ov)./B00001.dat'};
+% piv_figure = {'AoA_15_dt_6__MP(1x16x16_50ov).'};
 for i = 1:length(piv_inst_files)
     dat_file = piv_inst_files{i};
     mat = importdata(strcat(piv_data,dat_file));
@@ -136,7 +140,6 @@ for i = 1:length(piv_inst_files)
     mat(mat(:,5) == 0,1:4) = nan; % remove invalid points
 %     quiver(mat(:,1),mat(:,2),mat(:,3),mat(:,4))
     X = mat(:,1); Y = mat(:,2); U = mat(:,3); V = mat(:,4);
-
 
     nanIndices = isnan(X) | isnan(Y) | isnan(U);
 
@@ -151,8 +154,14 @@ for i = 1:length(piv_inst_files)
     % Create the contour plot
 %     contourf(xi, yi, Ui, 'LineWidth', 0.5, 'LineColor', 'k');hold on;
 
-    sp = 3; % quiver spacing
-    contLvl = -5:1:13;
+    sp = 5; % quiver spacing
+    contLvl = (6:0.5:12) / U_inf;
+%     contLvl = (0:0.2:2) / U_inf;
+    if i == 3
+        contLvl = (-5:1:13) / U_inf;
+%         contLvl = (0:0.5:5) / U_inf;
+        sp = 9;
+    end
     tickVals = linspace(contLvl(1), contLvl(end), length(contLvl));
     %% Define custom colormap
     numColors = length(contLvl);
@@ -164,7 +173,7 @@ for i = 1:length(piv_inst_files)
     
     % Create a custom colormap by interpolating between "Hot" and "Cold"
     hotNcold = [hotMap; coldMap];
-    data = Ui; newdata = data; 
+    data = Ui/U_inf; newdata = data; 
     for tv = 2:length(contLvl)
         % find all data between the new tick ranges, one block at a time
         ind = data>contLvl(tv-1) & data<=contLvl(tv);
@@ -172,15 +181,16 @@ for i = 1:length(piv_inst_files)
         % block edges
         newdata(ind) = rescale(data(ind),tickVals(tv-1),tickVals(tv));
     end
-        
+    figure(100+i) 
     set(gcf,'Position',[100 100 1000 600])
-    contourf(xi,yi,newdata,tickVals); hold on
-    xlim([-20, 160]);ylim([-160, 30]);
-    scatter(Xog(nanIndices), Yog(nanIndices), 'Marker', 'square', 'MarkerFaceColor', 'w', 'MarkerEdgeColor', 'none','SizeData', 130);
-    quiver(X(1:sp:end),Y(1:sp:end),U(1:sp:end),V(1:sp:end),'k');
-    xlim([-20, 160]);ylim([-60, 30]);
+    contourf(xi/c,yi/c,newdata,tickVals); hold on
+    contour(xi/c,yi/c,newdata,[0,0], 'LineColor','red','LineWidth',3) % reversed flow
+    scatter(Xog(nanIndices)/c, Yog(nanIndices)/c, 'Marker', 'square', 'MarkerFaceColor',  [0.9 0.9 0.9], 'MarkerEdgeColor', 'none','SizeData', 130);
+    quiver(X(1:sp:end)/c,Y(1:sp:end)/c,U(1:sp:end),V(1:sp:end),'k');
+    xlim([-0.2, 1.6]);ylim([-0.6, 0.3]);
     hold off
     C=hotNcold;
+%     C = hot(length(contLvl));
     tickVals = linspace(contLvl(1), contLvl(end), length(contLvl)+1);
     colormap(flipud(C))
     colorbar('Ticks',tickVals,...
@@ -188,10 +198,10 @@ for i = 1:length(piv_inst_files)
     % colorbar('Ticks',tickVals,...
     %     'TickLabels',flip({'','5(a)', '4(b)' ,'3(c)', '2(d)', '1(e)' ,'0.5(f)' ,'0(g)' ,'-0.5(h)' ,'-1(i)', '-2(j)', '-3(k)'}) ...
     %     ,'TickLabelInterpreter','latex');
-    
-    title('$U_{\mathrm{x}}$ [m/s]','interpreter','latex','FontSize',lblSz);
-    xlabel('$x$ [mm]','interpreter','latex','FontSize',lblSz);
-    ylabel('$y$ [mm]','interpreter','latex','FontSize',lblSz);
+    title('$\overline{U}_{\mathrm{x}} / U_{\infty}$','interpreter','latex','FontSize',lblSz);
+%     title('$U^{\prime}_{\mathrm{x}} / U_{\infty}$','interpreter','latex','FontSize',lblSz);
+    xlabel('$x/c$','interpreter','latex','FontSize',lblSz);
+    ylabel('$y/c$','interpreter','latex','FontSize',lblSz);
     set(gca,'FontSize', fntSz,'TickLabelInterpreter','latex');
     exportgraphics(gcf,["figures/"+piv_figure{i}+".pdf"], 'Resolution', 300)
 
@@ -219,22 +229,22 @@ set(gca,'ticklabelinterpreter','latex')
 set(gca,'FontSize',fntSz)
 
 figure(10)
-plot(yvec,hwa.ubar(1,:)); hold on
-plot(yvec,hwa.ubar(2,:));
-plot(yvec,hwa.ubar(3,:)); hold off
-ylabel('$U$ [m/s]','Interpreter','latex','FontSize',fntSz);
-xlabel('$y$ [mm]','Interpreter','latex','FontSize',fntSz);
+plot(yvec/c,hwa.ubar(1,:)/U_inf); hold on
+plot(yvec/c,hwa.ubar(2,:)/U_inf);
+plot(yvec/c,hwa.ubar(3,:)/U_inf); hold off
+ylabel('$|U|/U_{\infty}$','Interpreter','latex','FontSize',fntSz);
+xlabel('$y/c$','Interpreter','latex','FontSize',fntSz);
 title('Mean Velocity - Wake','Interpreter','latex','FontSize',fntSz);
 legend('$\alpha = 0$ deg', '$\alpha = 5$ deg', '$\alpha = 15$ deg','interpreter','latex','Location','southwest')
 set(gca,'ticklabelinterpreter','latex')
 set(gca,'FontSize',fntSz)
 
 figure(11)
-plot(yvec,hwa.rms(1,:)); hold on
-plot(yvec,hwa.rms(2,:));
-plot(yvec,hwa.rms(3,:)); hold off
-ylabel('$U_{\mathrm{rms}}$ [m/s]','Interpreter','latex','FontSize',fntSz);
-xlabel('$y$ [mm]','Interpreter','latex','FontSize',fntSz);
+plot(yvec/c,hwa.rms(1,:)/U_inf); hold on
+plot(yvec/c,hwa.rms(2,:)/U_inf);
+plot(yvec/c,hwa.rms(3,:)/U_inf); hold off
+ylabel('$U_{\mathrm{rms}} / U_{\infty}$ [m/s]','Interpreter','latex','FontSize',fntSz);
+xlabel('$y/c$','Interpreter','latex','FontSize',fntSz);
 title('Velocity Fluctutations - Wake','Interpreter','latex','FontSize',fntSz);
 legend('$\alpha = 0$ deg', '$\alpha = 5$ deg', '$\alpha = 15$ deg','interpreter','latex','Location','northwest')
 set(gca,'ticklabelinterpreter','latex')
