@@ -28,11 +28,12 @@ end
 kings = polyfit(u,urange,4);
 
 figure(1)
-scatter(u,urange); hold on
-plot(1.1:0.001:1.82,polyval(kings,1.1:0.001:1.82))
-legend('calibration data', 'calibration polynomial','FontSize',fntSz)
-ylabel('$U$ [m/s]','Interpreter','latex','FontSize',fntSz)
-xlabel('$V$ [volt]','Interpreter','latex','FontSize',fntSz)
+scatter(urange,u); hold on
+plot(polyval(kings,1.1:0.001:1.82),1.1:0.001:1.82)
+legend('calibration data', 'calibration polynomial','Interpreter','latex','Location','southeast')
+title('Calibration Curve');
+xlabel('$U$ [m/s]','Interpreter','latex','FontSize',fntSz)
+ylabel('$V$ [volt]','Interpreter','latex','FontSize',fntSz)
 % set(gca,)
 grid on
 hold off

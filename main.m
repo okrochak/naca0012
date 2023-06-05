@@ -128,8 +128,8 @@ spectrum = abs(uk_pre);
 
 close all
 %% 3. Analyze the PIV data 
-piv_inst_files = {'AoA_0__SP(32x32_50ov)./B00001.dat', 'AoA_5__SP(32x32_50ov)./B00001.dat', 'AoA_5__SP(32x32_50ov)./B00001.dat'};
-piv_figure = {'AoA_0__SP(32x32_50ov).','AoA_5__SP(32x32_50ov).','AoA_15__SP(32x32_50ov).'};
+piv_inst_files = {'AoA_0__SP(32x32_50ov)/B00001.dat'};
+piv_figure = {'AoA_0__SP(32x32_50ov)'};
 % piv_inst_files = {'AoA_15_dt_6__MP(1x16x16_50ov)./B00001.dat'};
 % piv_figure = {'AoA_15_dt_6__MP(1x16x16_50ov).'};
 for i = 1:length(piv_inst_files)
@@ -212,7 +212,8 @@ end
 figure(1)
 plot(ts,ucorr); hold on
 yline(0);
-scatter(T,ucorr(val)); hold off
+scatter(T,ucorr(val));
+text(T+0.001,ucorr(val)+0.05,['(',num2str(T),',',num2str(ucorr(val)),')']); hold off
 xlim([0,0.05]); ylim([-0.1,1]);
 title('Normalized Auto-correlation Coefficient','Interpreter','latex','FontSize',fntSz);
 ylabel('$\rho_{xx}$','Interpreter','latex','FontSize',fntSz);
@@ -232,7 +233,7 @@ figure(10)
 plot(yvec/c,hwa.ubar(1,:)/U_inf); hold on
 plot(yvec/c,hwa.ubar(2,:)/U_inf);
 plot(yvec/c,hwa.ubar(3,:)/U_inf); hold off
-ylabel('$|U|/U_{\infty}$','Interpreter','latex','FontSize',fntSz);
+ylabel('$\bar{U}/U_{\infty}$','Interpreter','latex','FontSize',fntSz);
 xlabel('$y/c$','Interpreter','latex','FontSize',fntSz);
 title('Mean Velocity - Wake','Interpreter','latex','FontSize',fntSz);
 legend('$\alpha = 0$ deg', '$\alpha = 5$ deg', '$\alpha = 15$ deg','interpreter','latex','Location','southwest')
